@@ -21,21 +21,20 @@ class App:
         self.proxy = None
 
     def run(self):
-        # todo add send to endpoint
-        scraper = Scraper(self.browser, headless=False)
+        scraper = Scraper(self.browser, headless=True)
         scraper.load_page(base_url)
         current_messages = scraper.get_messages()
         previously_messages = scraper.get_previous_messages()
         messages_after_filters = scraper.compare_messages(current_messages, previously_messages)
-        for message in messages_after_filters:
-            scraper.send_message(message)
-        # todo add messages and delete after 1000 records
-        print(messages)
+        for key in messages_after_filters:
+            scraper.send_message(messages_after_filters[key])
+        scraper.add_records_to_previous_messages(messages_after_filters)
+        print(messages_after_filters)
 
 
 if __name__ == '__main__':
     while True:
-        time.sleep(300)
+        
         # browsers = ['firefox', 'chrome', "undetected_chromedriver"]
         browsers = ['firefox']
         for browser in browsers:
@@ -45,3 +44,5 @@ if __name__ == '__main__':
                 break
             except selenium.common.WebDriverException as _ex:
                 logger.warning(f"Exception: {_ex}")
+                
+        time.sleep(300)
